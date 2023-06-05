@@ -1,0 +1,40 @@
+name: Newman CLI
+
+on:
+push:
+  branches: [ "main" ]
+pull_request:
+  branches: [ "main" ]
+  
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create dir
+        run: |
+          mkdir SampleArtifact
+        
+      - name: Install Node
+        uses: actions/checkout@v3
+        with:
+          node-version : '17.x'
+        
+      - name: Install newman
+        run: | 
+          npm install -g newman
+          npm install -g newman-reporter-htmlextra
+        
+      - name: Run Collection
+        run: | 
+          newman run "collection/API_NASA_TEST_PROJECT.postman_collection.json" -e "collection/NASA.postman_environment.json" -r htmlextra --reporter-htmlextra-export SampleArtifact/report.html
+        
+      - name: Publish Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: Reports
+          path: SampleArtifact
+          
