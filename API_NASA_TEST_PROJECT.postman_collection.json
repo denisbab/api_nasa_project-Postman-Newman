@@ -1,0 +1,211 @@
+{
+	"info": {
+		"_postman_id": "0f9b8323-8046-4026-b168-5e6b7a468e98",
+		"name": "API_NASA_TEST_PROJECT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9260583"
+	},
+	"item": [
+		{
+			"name": "Photos by Rover and Sol",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//Set rover and sol values",
+							"const rover = \"curiosity\"",
+							"const sol = 1666",
+							"",
+							"pm.environment.set(\"rover\", rover)",
+							"pm.environment.set(\"sol\", sol)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json()",
+							"const cameras = jsonData.photos.map(photo => photo.camera.name)",
+							"const uniqueCameras = [...new Set(cameras.map(camera => camera))]",
+							"",
+							"pm.test(\"Number of photos: \" + jsonData.photos.length)",
+							"pm.test(\"List of unique cameras: \" + uniqueCameras)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.nasa.gov/mars-photos/api/v1/rovers/{{rover}}/photos?sol={{sol}}&api_key=DEMO_KEY",
+					"protocol": "https",
+					"host": [
+						"api",
+						"nasa",
+						"gov"
+					],
+					"path": [
+						"mars-photos",
+						"api",
+						"v1",
+						"rovers",
+						"{{rover}}",
+						"photos"
+					],
+					"query": [
+						{
+							"key": "sol",
+							"value": "{{sol}}"
+						},
+						{
+							"key": "api_key",
+							"value": "DEMO_KEY"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Photos Count and Cameras by using manifests",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//Set rover and sol values",
+							"const rover = \"curiosity\"",
+							"const sol = 1666",
+							"",
+							"pm.environment.set(\"rover\", rover)",
+							"pm.environment.set(\"sol\", sol)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json()",
+							"",
+							"const photos = jsonData.photo_manifest.photos",
+							"",
+							"const photo = photos.filter(el => el.sol === pm.environment.get(\"sol\"))",
+							"",
+							"pm.test(\"Number of photos: \" + photo[0].total_photos)",
+							"pm.test(\"Cameras are used: \" + photo[0].cameras)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.nasa.gov/mars-photos/api/v1/manifests/{{rover}}?api_key=DEMO_KEY",
+					"protocol": "https",
+					"host": [
+						"api",
+						"nasa",
+						"gov"
+					],
+					"path": [
+						"mars-photos",
+						"api",
+						"v1",
+						"manifests",
+						"{{rover}}"
+					],
+					"query": [
+						{
+							"key": "api_key",
+							"value": "DEMO_KEY"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Photo find by ID, Rover and Sol",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//Set rover and sol values",
+							"const rover = \"opportunity\"",
+							"const sol = 1",
+							"const camera = \"pancam\"",
+							"const photoID = 268034",
+							"",
+							"pm.environment.set(\"rover\", rover)",
+							"pm.environment.set(\"sol\", sol)",
+							"pm.environment.set(\"camera\", camera)",
+							"pm.environment.set(\"photoID\", photoID)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json()",
+							"",
+							"const requestedPhoto = jsonData.photos.filter(el => el.id === pm.environment.get(\"photoID\"))",
+							"",
+							"console.log(requestedPhoto)",
+							"",
+							"pm.test(\"Image source: \" + requestedPhoto[0].img_src)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.nasa.gov/mars-photos/api/v1/rovers/{{rover}}/photos?sol={{sol}}&api_key=DEMO_KEY&camera={{camera}}",
+					"protocol": "https",
+					"host": [
+						"api",
+						"nasa",
+						"gov"
+					],
+					"path": [
+						"mars-photos",
+						"api",
+						"v1",
+						"rovers",
+						"{{rover}}",
+						"photos"
+					],
+					"query": [
+						{
+							"key": "sol",
+							"value": "{{sol}}"
+						},
+						{
+							"key": "api_key",
+							"value": "DEMO_KEY"
+						},
+						{
+							"key": "camera",
+							"value": "{{camera}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
